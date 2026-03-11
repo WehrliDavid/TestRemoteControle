@@ -1,0 +1,16 @@
+name: Remote Control
+
+on:
+  workflow_dispatch:
+
+jobs:
+  trigger-remote-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Controler
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.Disbatch_Action }}" \
+            https://api.github.com/repos/ch-sz-geo/A254/dispatches \
+            -d '{"event_type":"run-external-workflow","client_payload":{"ref":"main"}}'
