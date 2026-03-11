@@ -1,9 +1,48 @@
-name: Remote Control
+name: Detect Model Changes
 
 on:
-  workflow_dispatch:
+  push:
+    paths:
+      - 'models/**'
 
 jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # ⚠️ Important: fetches full history, not just latest commit
+
+      - name: Print all changed files in models/
+        run: |
+          echo "======================================"
+          echo "Changed files in models/ folder:"
+          echo "======================================"
+
+          # Get all commits in this push
+          COMMITS="${{ github.event.before }}".."${{ github.sha }}"
+
+          # Loop through each changed file in models/
+          git diff --name-status $COMMITS -- models/ | while read line; do
+            STATUS=$(echo "$line" | cut -f1)
+            FILE=$(echo "$line" | cut -f2)
+
+            case "$STATUS" in
+              A) echo "  ✅ ADDED:    $FILE" ;;
+              M) echo "  ✏️  MODIFIED: $FILE" ;;
+              D) echo "  ❌ DELETED:  $FILE" ;;
+              R*) echo "  🔀 RENAMED:  $FILE -> $(echo "$line" | cut -f3)" ;;
+              *) echo "  ❓ UNKNOWN ($STATUS): $FILE" ;;
+            esac
+          done
+
+          echo "======================================"
+          echo "Commits included in this push:"
+          echo "======================================"
+          git log --oneline $COMMITS
+
   trigger-remote-repo:
     runs-on: ubuntu-latest
     steps:
