@@ -1,0 +1,1031 @@
+TRANSFER Datenkatalog;
+
+!! Kanton Schwyz: Grunddatensatz / Datenbeschreibung in INTERLIS
+!! (Stand: 09.11.2000 / WE)
+!!
+!! Ersetzt Version vom: 21.07.1997 
+!!
+
+MODEL Grunddatensatz_SZ
+
+    DOMAIN
+
+        LKoord = COORD2    600000.000     170000.000
+                                           740000.000    2800000.000;
+        HKoord = COORD3    600000.000     170000.000         0.000
+                                           740000.000      280000.000      3000.000;
+        Hoehe = DIM1            0.000       3000.000;
+        Genauigkeit = [0.0 .. 700.0]; !! in cm
+        Zuverlaessigkeit = (ja, nein); !! genuegend, ungenuegend
+        SchriftOri = GRADS 0.0 400.0;
+        Status = (projektiert, gueltig);
+        Qualitaetsart = (AV93,
+                        AV93_prov, !! provisorische Numerisierung nach TVAV
+                        nicht_AV93, !! altrechtlich, entspricht nicht TVAV
+                        uebrige);  
+        Herkunftsart = (Planabgriff,
+                        terrestrisch,
+                        GPS,
+                        photogrammetrisch,
+                        konstruiert,  !!  Nur fuer Liegenschaften (Projektmutationen)
+                        uebrige); !! z. B. DHM 25
+        !! Herkunftsart obligatorisch bei prov. Numerisierung gemaess TVAV
+        SchriftSize = (klein, mittel, gross);
+
+
+    TOPIC Fixpunkte =
+
+
+    TABLE LFPNachfuehrung =
+            Identifikator: TEXT*12; !! Nummer des technischen Dossiers
+            Beschreibung: TEXT*30;
+            Perimeter: SURFACE WITH (STRAIGHTS, ARCS) VERTEX LKoord
+                       WITHOUT OVERLAPS > 0.200;
+            Datum1: DATE; !! Datum des gueltigen Eintrags
+            Datum2: OPTIONAL DATE; !! Vergabe durch Nachfuehrungsgeometer
+        IDENT
+            Identifikator;
+        END LFPNachfuehrung;
+
+        TABLE LFP =
+            Entstehung: -> LFPNachfuehrung; !! Beziehung 1-mc
+            Nummer: TEXT*12; !! Vergabe durch Landestopographie und Kanton
+            !! Nummernverzeichnis der Abteilung Vermessung des TBA
+            NumPos: LKoord;
+            NumOri: SchriftOri; !! Default: 100.0
+            NumHAli: HALIGNMENT; !! Default: Left
+            NumVAli: VALIGNMENT; !! Default: Base
+            LageGeom: LKoord // Geometrie innerhalb Entstehung ^. Perimeter //;
+            HoeheGeom: OPTIONAL Hoehe;           
+            LageGen: Genauigkeit;
+            LageZuv: Zuverlaessigkeit;
+            HoeheGen: OPTIONAL Genauigkeit;
+            HoeheZuv: OPTIONAL Zuverlaessigkeit;
+            Begehbarkeit: (begehbar, nicht_begehbar);
+            SymbolOri: OPTIONAL SchriftOri; !! Default: 0.0
+            Art: (LFP1, LFP2);
+                !! Triangulationspunkt I-IIIter Ordnung,
+                !! Triangulationspunkt IVter Ordnung
+            Herkunft: OPTIONAL Herkunftsart;
+        IDENT
+            Nummer;
+            LageGeom;
+        END LFP;
+
+        TABLE LFP3 =
+                    !! bisher Basispunkt, Verdichtungspunkt, Polygonpunkt, Passpunkt
+            Entstehung: -> LFPNachfuehrung; !! Beziehung 1-mc
+            Nummer: TEXT*12; !! BFS-Nummer plus laufende Nummer
+            NumPos: LKoord;
+            NumOri: SchriftOri; !! Default: 100.0
+            NumHAli: HALIGNMENT; !! Default: Left
+            NumVAli: VALIGNMENT; !! Default: Base
+            LageGeom: LKoord // Geometrie innerhalb Entstehung ^. Perimeter //;
+            HoeheGeom: OPTIONAL Hoehe;
+            LageGen: Genauigkeit;
+            LageZuv: Zuverlaessigkeit;
+            HoeheGen: OPTIONAL Genauigkeit;
+            HoeheZuv: OPTIONAL Zuverlaessigkeit;
+            Punktzeichen: (Stein, Bolzen_Rohr_Pfahl, Kreuz, unversichert);
+            Protokoll: (ja, nein); !! Versicherungsprotokoll
+            SymbolOri: OPTIONAL SchriftOri; !! Default: 0.0
+            Herkunft: OPTIONAL Herkunftsart;
+        IDENT
+            Nummer;
+            LageGeom;   
+        END LFP3;
+
+TABLE LFP4 =
+                   !! Hilfspunkte nicht versichert, alte Fixpunkte nicht mehr verwendet, freie Stationierung
+                   !! LFP4 werden im Plan für das Grundbuch nicht dargestellt
+            Entstehung: -> LFPNachfuehrung; !! Beziehung 1-mc
+            Nummer: TEXT*12; !! BFS-Nummer plus laufende Nummer
+            NumPos: LKoord;
+            NumOri: SchriftOri; !! Default: 100.0
+            NumHAli: HALIGNMENT; !! Default: Left
+            NumVAli: VALIGNMENT; !! Default: Base
+            LageGeom: LKoord // Geometrie innerhalb Entstehung ^. Perimeter //;
+            HoeheGeom: OPTIONAL Hoehe;
+            LageGen: Genauigkeit;
+            LageZuv: Zuverlaessigkeit;
+            HoeheGen: OPTIONAL Genauigkeit;
+            HoeheZuv: OPTIONAL Zuverlaessigkeit;
+            Punktzeichen: (Stein, Bolzen_Rohr_Pfahl, Kreuz, unversichert);
+            Protokoll: (ja, nein); !! Versicherungsprotokoll
+            SymbolOri: OPTIONAL SchriftOri; !! Default: 0.0
+            Herkunft: OPTIONAL Herkunftsart;
+        IDENT
+            Nummer;
+            LageGeom;   
+        END LFP4;
+
+    TABLE HFPNachfuehrung =
+            Identifikator: TEXT*12; !! Nummer des technischen Dossiers
+            Beschreibung: TEXT*30;
+            Perimeter: SURFACE WITH (STRAIGHTS, ARCS) VERTEX LKoord
+                       WITHOUT OVERLAPS > 0.200;
+            Datum1: DATE; !! Datum des gueltigen Eintrags
+            Datum2: OPTIONAL DATE; !! Vergabe durch Nachfuehrungsgeometer
+        IDENT
+            Identifikator;
+        END HFPNachfuehrung;
+
+        TABLE HFP =
+            Entstehung: -> HFPNachfuehrung; !! Beziehung 1-mc
+            Nummer: TEXT*12; !! Nummer des technischen Dossiers
+            !! Vergabe durch Landestopographie fuer die HFP1
+            !! Vergabe durch Kanton fuer die HFP2
+            NumPos: LKoord;
+            NumOri: SchriftOri; !! Default: 100.0
+            NumHAli: HALIGNMENT; !! Default: Left
+            NumVAli: VALIGNMENT; !! Default: Base
+            LageGeom: LKoord // LageGeom innerhalb Entstehung ^. Perimeter //;
+            HoeheGeom: Hoehe;
+            LageGen: Genauigkeit;
+            LageZuv: Zuverlaessigkeit;
+            HoeheGen: Genauigkeit;
+            HoeheZuv: Zuverlaessigkeit;
+            Art: (HFP1, HFP2); !! (Landesnivellement, Kantonsnivellement)
+            Herkunft: OPTIONAL Herkunftsart; !! Als terrestrisch angenommen
+        IDENT
+            Nummer;
+            LageGeom;
+        END HFP;
+
+        OPTIONAL TABLE HFP3 = !! Gemeindenivellement, wenn keine Hoehe bei LFP3
+            Entstehung: -> HFPNachfuehrung; !! Beziehung 1-mc
+            Nummer: TEXT*12; !! BFS-Nummer plus laufende Nummer
+            NumPos: LKoord;
+            NumOri: SchriftOri; !! Default: 100.0
+            NumHAli: HALIGNMENT; !! Default: Left
+            NumVAli: VALIGNMENT; !! Default: Base
+            LageGeom: LKoord // LageGeom innerhalb Entstehung ^. Perimeter //;
+            HoeheGeom: Hoehe;
+            LageGen: Genauigkeit;
+            LageZuv: Zuverlaessigkeit;
+            HoeheGen: Genauigkeit;
+            HoeheZuv: Zuverlaessigkeit;
+            Herkunft: OPTIONAL Herkunftsart; !! Als terrestrisch angenommen
+        IDENT
+            Nummer;
+            LageGeom;
+        END HFP3;
+
+    END Fixpunkte.
+
+
+    TOPIC Bodenbedeckung =
+
+        DOMAIN
+            BBArt = (Gebaeude (Wohnhaus,
+                               Wohn_Geschaeftshaus,
+                               Gewerbe_Industriegebaeude,
+                               Gasthaus_Hotel,
+                               Landwirtschaftsgebaeude,
+                               Oeffentliches_Gebaeude,
+                               Kirchliches_Gebaeude,
+                               Spital_Anstalt_Heim,
+                               Militaer_Gebaeude,
+                               Verkehrsgebaeude,
+                               Schulgebaeude,
+                               Kultur_Sportgebaeude,
+                               Technisches_Gebaeude,
+                               Einstellgarage,
+                               Bootshaus,
+                               Kleingebaeude),
+                     befestigt (Strasse_Weg,
+                                Trottoir, !! nur hier, nicht EO
+                                Verkehrsinsel, !! nur hier nicht EO
+                                Bahn,
+                                Flugplatz,
+                                Wasserbecken,
+                                uebrige_befestigte),
+                     humusiert (Acker_Wiese_Weide,
+                                Intensivkultur (Reben,
+                                                uebrige_Intensivkultur),
+                                Gartenanlage,
+                                Hoch_Flachmoor,
+                                uebrige_humusierte),
+                     Gewaesser (stehendes,
+                                fliessendes,
+                                Schilfguertel),
+                     bestockt (geschlossener_Wald,
+                               uebrige_bestockte),
+                     vegetationslos (Fels,
+                                     Gletscher_Firn,
+                                     Geroell_Sand,
+                                     Abbau_Deponie,
+                                     uebrige_vegetationslose));
+            BBSymb = (Flussrichtung,
+                      Schilfguertel,
+                      Wasserbecken,
+                      Moor,
+                      Reben);
+
+
+        TABLE BBNachfuehrung =
+            Identifikator: TEXT*12; !! Nummer des technischen Dossiers
+            Beschreibung: TEXT*30;
+            Perimeter: SURFACE WITH (STRAIGHTS, ARCS) VERTEX LKoord
+                       WITHOUT OVERLAPS > 0.200;
+            Gueltigkeit: Status;
+            Datum1: DATE; !! Datum des gueltigen Eintrags
+            Datum2: OPTIONAL DATE; !! Vergabe durch Nachfuehrungsgeometer
+        IDENT
+            Identifikator;
+        END BBNachfuehrung;
+
+        TABLE PROJFlaeche =
+            Entstehung: -> BBNachfuehrung // Gueltigkeit = projektiert //; !! Beziehung 1-mc
+            Geometrie: SURFACE WITH (STRAIGHTS, ARCS) VERTEX LKoord
+                       WITHOUT OVERLAPS > 0.050;
+            Qualitaet: Qualitaetsart;
+            Art: BBArt;
+            Herkunft: OPTIONAL Herkunftsart; !! "uebrige" nicht verwenden
+        NO IDENT
+        END PROJFlaeche;
+
+
+        TABLE BoFlaeche =
+            Entstehung: -> BBNachfuehrung // Gueltigkeit = gueltig //; !! Beziehung 1-mc
+            Geometrie: AREA WITH (STRAIGHTS, ARCS) VERTEX LKoord
+                       WITHOUT OVERLAPS > 0.050  !! 
+                       LINEATTR =
+                           Art: OPTIONAL (hart, weich, fiktiv);
+                       END;
+                 !! hart = scharfe Abgrenzung,weich = offen (Fassade), unsicher (Moor)
+                 !! fiktiv = Aufteilungsgrenze bei grossen Flaechen 
+                 !! Das Linienattribut soll nicht ausgegeben werden, wenn
+                 !! dieses aus Nachbarschaftsbeziehungen ableitbar ist
+            Qualitaet: Qualitaetsart;
+            Art: BBArt;
+            Herkunft: OPTIONAL Herkunftsart;
+        NO IDENT
+        END BoFlaeche;
+
+        TABLE Gebaeudenummer =
+            Objekt: -> BoFlaeche // Art = Gebaeude //; !! Beziehung 1-mc
+            Nummer: TEXT*12; !! Gebaeudenummer
+            NumPos: LKoord // Position in der Regel innerhalb der Flaeche //;
+            NumOri: SchriftOri;
+            NumHAli: HALIGNMENT; !! Default: Left
+            NumVAli: VALIGNMENT; !! Default: Base
+        NO IDENT
+        END Gebaeudenummer;
+
+        TABLE Objektname =
+            Objekt: -> BoFlaeche; !! Beziehung 1-mc
+            Name: TEXT*30;
+        NO IDENT
+        END Objektname;
+
+        TABLE ObjektnamenPos =
+            Objekt: -> Objektname; !! Beziehung 1-mc
+            NamPos: LKoord // Position in der Regel innerhalb der Flaeche //;
+            NamOri: SchriftOri;
+            NamHAli: HALIGNMENT; !! Default: Center
+            NamVAli: VALIGNMENT; !! Default: Half
+            NamSize: SchriftSize;
+        NO IDENT
+        END ObjektnamenPos;
+
+        TABLE Symbole =
+            Symbol: -> BoFlaeche; !! Beziehung 1-mc
+            SymbolPos: LKoord // Position in der Regel innerhalb der Flaeche //;
+            SymbolOri: SchriftOri;
+            Art: BBSymb;
+        NO IDENT
+        END Symbole;
+
+        OPTIONAL TABLE Einzelpunkt =     !! Nur praezis vermessene BB-Punkte
+            Entstehung: OPTIONAL -> BBNachfuehrung; !! Beziehung 1-mc
+            Nummer:     OPTIONAL TEXT*12;
+            Geometrie:  LKoord // nicht zugleich LFP, GP oder Hoheitsgrenzpunkt //;
+            LageGen:    Genauigkeit;
+            LageZuv:    Zuverlaessigkeit;
+            Punktzeichen: OPTIONAL TEXT*30;
+            Art:        BBArt;
+            Herkunft:   OPTIONAL Herkunftsart;
+        IDENT
+             Geometrie;
+        END Einzelpunkt;
+
+END Bodenbedeckung.
+
+
+    TOPIC Einzelobjekte =
+
+        DOMAIN
+            ObjArt = (Mauer, unterirdisches_Gebaeude,
+                                            uebriger_Gebaeudeteil,
+                                            eingedoltes_oeffentliches_Gewaesser,
+                                            wichtige_Treppe, Tunnel_Unterfuehrung_Galerie,
+                                            Bruecke_Passerelle, Brunnen, Reservoir,
+                                            Pfeiler, Unterstand, Silo_Turm_Gasometer, Hochkamin,
+                                            Denkmal, Mast_Antenne, Aussichtsturm, Uferverbauung,
+                                            Schwelle, Lawinenverbauung, massiver_Sockel,
+                                            Ruine_archaeologisches_Objekt, Landungssteg,
+                                            einzelner_Fels, schmale_bestockte_Flaeche,
+                                            Rinnsal, schmaler_Weg, 
+                                            Hochspannungsfreileitung, Druckleitung, Bahngeleise,
+                                            Luftseilbahn, Gondelbahn_Sesselbahn,
+                                            Materialseilbahn, Skilift, Faehre,
+                                            Grotte_Hoehleneingang, Achse,
+                                            wichtiger_Einzelbaum, Bildstock_Kruzifix,
+                                            Quelle, Bezugspunkt, Jauchegrube);
+
+        TABLE EONachfuehrung =
+            Identifikator: TEXT*12; !! Nummer des technischen Dossiers
+            Beschreibung: TEXT*30;
+            Perimeter: SURFACE WITH (STRAIGHTS, ARCS) VERTEX LKoord
+                WITHOUT OVERLAPS > 0.200;
+            Gueltigkeit: Status;
+            Datum1: DATE; !! Datum des gueltigen Eintrags
+            Datum2: OPTIONAL DATE; !! Vergabe durch Nachfuehrungsgeometer
+        IDENT
+            Identifikator;
+        END EONachfuehrung;
+
+        TABLE PROJObjekt =
+            Entstehung: -> EONachfuehrung // Gueltigkeit = projektiert //; !! Beziehung 1-mc
+            !! Eine der folgenden Geometrien muss existieren:
+            Geometrie1: OPTIONAL SURFACE WITH (STRAIGHTS, ARCS) VERTEX LKoord
+                WITHOUT OVERLAPS > 0.050;
+            Geometrie2: OPTIONAL POLYLINE WITH (STRAIGHTS, ARCS) VERTEX LKoord;
+            Geometrie3: OPTIONAL LKoord;
+            Qualitaet: Qualitaetsart;
+            Art: ObjArt;
+            Herkunft: OPTIONAL Herkunftsart;
+        NO IDENT
+        END PROJObjekt;
+
+        TABLE Einzelobjekt =
+            Entstehung: -> EONachfuehrung // Gueltigkeit = gueltig //; !! Beziehung 1-mc
+            Qualitaet: Qualitaetsart;
+            Art: ObjArt;
+            Herkunft: OPTIONAL Herkunftsart;
+        NO IDENT
+        END Einzelobjekt;
+
+
+        TABLE Flaechenelement =
+            Objekt: -> Einzelobjekt; !! Beziehung 1-mc
+            Geometrie: SURFACE WITH (STRAIGHTS, ARCS) VERTEX LKoord
+                       WITHOUT OVERLAPS > 0.050
+                         LINEATTR = Art: OPTIONAL (hart, weich, fiktiv);
+                       END;  !! 
+                 !! hart = scharfe Abgrenzung,weich = offen (Fassade)
+                 !! fiktiv = Aufteilungsgrenze bei grossen Flaechen 
+                 !! Das Linienattribut soll nicht ausgegeben werden, wenn
+                 !! dieses aus Nachbarschaftsbeziehungen ableitbar ist
+        NO IDENT
+        END Flaechenelement;
+
+        TABLE Linienelement =
+            Objekt: -> Einzelobjekt; !! Beziehung 1-mc
+            Geometrie: POLYLINE WITH (STRAIGHTS, ARCS) VERTEX LKoord;   
+        NO IDENT
+        END Linienelement;
+
+        TABLE Punktelement =
+            Objekt: -> Einzelobjekt; !! Beziehung 1-mc
+            Geometrie: LKoord;
+            SymbolOri: SchriftOri;
+        NO IDENT
+        END Punktelement;
+
+        TABLE Objektname =
+            Objekt: -> Einzelobjekt; !! Beziehung 1-mc
+            Name: TEXT*30;
+            NamPos: LKoord // Position in der Regel innerhalb der Flaeche //;
+            NamOri: SchriftOri;
+            NamHAli: HALIGNMENT; !! Default: Center
+            NamVAli: VALIGNMENT; !! Default: Half
+        NO IDENT
+        END Objektname;
+
+        TABLE Objektnummer =
+            Objekt: -> Einzelobjekt; !! Beziehung 1-c
+            Nummer: TEXT*12;
+            NumPos: LKoord // Position in der Regel innerhalb der Flaeche //;
+            NumOri: SchriftOri;
+            NumHAli: HALIGNMENT; !! Default: Left
+            NumVAli: VALIGNMENT; !! Default: Base
+        NO IDENT
+        END Objektnummer;
+
+        OPTIONAL TABLE Einzelpunkt =     !! Nur praezis vermessene EO-Punkte
+            Entstehung: OPTIONAL -> EONachfuehrung; !! Beziehung 1-mc
+            Nummer:     OPTIONAL TEXT*12;
+            Geometrie:  LKoord // nicht zugleich LFP, GP oder Hoheitsgrenzpunkt //;
+            LageGen:    Genauigkeit;
+            LageZuv:    Zuverlaessigkeit;
+            Punktzeichen: OPTIONAL TEXT*30;
+            Art:        ObjArt;
+            Herkunft:   OPTIONAL Herkunftsart;
+        IDENT
+            Geometrie;
+        END Einzelpunkt;
+
+    END Einzelobjekte.
+
+
+    TOPIC Hoehen =
+
+        TABLE HoehenNachfuehrung =
+            Identifikator: TEXT*12; !! Nummer des technischen Dossiers
+            Beschreibung: TEXT*30;
+            Perimeter: SURFACE WITH (STRAIGHTS, ARCS) VERTEX LKoord
+                WITHOUT OVERLAPS > 0.200;
+            Gueltigkeit: Status;
+            Datum1: DATE; !! Datum des gueltigen Eintrags
+            Datum2: OPTIONAL DATE; !! Vergabe durch Nachfuehrungsgeometer
+        IDENT
+            Identifikator;
+        END HoehenNachfuehrung;
+
+        TABLE PROJHoehenpunkt =
+            Entstehung: -> HoehenNachfuehrung
+                // Gueltigkeit = projektiert //; !! Beziehung 1-mc
+            Geometrie: HKoord;
+            Qualitaet: Qualitaetsart;
+            Kotenanschrift: (ja, nein);
+            SchriftPos: OPTIONAL LKoord; !! Angabe nur wenn Kotenanschrift vorhanden
+            SchriftOri: OPTIONAL SchriftOri; !! Default: 100.0
+            SchriftHAli: OPTIONAL HALIGNMENT; !! Default: Left
+            SchriftVAli: OPTIONAL VALIGNMENT; !! Default: Base
+            Herkunft: OPTIONAL Herkunftsart;
+        IDENT
+            Geometrie;
+        END PROJHoehenpunkt;
+
+        TABLE PROJGelaendekante =
+            Entstehung: -> HoehenNachfuehrung
+                // Gueltigkeit = projektiert //; !! Beziehung 1-mc
+            Geometrie: POLYLINE WITH (STRAIGHTS, ARCS) VERTEX HKoord;
+            Qualitaet: Qualitaetsart;
+            Art: (Bruchkante, Strukturlinie);
+            Herkunft: OPTIONAL Herkunftsart;
+        NO IDENT
+        END PROJGelaendekante;
+
+        TABLE Hoehenpunkt =
+            Entstehung: -> HoehenNachfuehrung
+                // Gueltigkeit = gueltig //; !! Beziehung 1-mc
+            Geometrie: HKoord;
+            Qualitaet: Qualitaetsart;
+            Kotenanschrift: (ja, nein);
+            SchriftPos: OPTIONAL LKoord;  !!  Angabe nur wenn Kotenanschrift vorhanden
+            SchriftOri: OPTIONAL SchriftOri; !! Default: 100.0
+            SchriftHAli: OPTIONAL HALIGNMENT; !! Default: Left
+            SchriftVAli: OPTIONAL VALIGNMENT; !! Default: Center
+            Herkunft: OPTIONAL Herkunftsart;
+        IDENT
+            Geometrie;
+        END Hoehenpunkt;
+
+        TABLE Gelaendekante =
+            Entstehung: -> HoehenNachfuehrung // Gueltigkeit = gueltig //; !! Beziehung 1-mc
+            Geometrie: POLYLINE WITH (STRAIGHTS, ARCS) VERTEX HKoord;
+            Qualitaet: Qualitaetsart;
+            Art: (Bruchkante, Strukturlinie);
+            Herkunft: OPTIONAL Herkunftsart;
+        NO IDENT
+        END Gelaendekante;
+
+        OPTIONAL TABLE Dachlandschaft =
+            Entstehung: -> HoehenNachfuehrung // Gueltigkeit = gueltig //; !! Beziehung 1-mc
+            Geometrie: POLYLINE WITH (STRAIGHTS, ARCS) VERTEX HKoord;
+            Qualitaet: Qualitaetsart;
+            Herkunft: OPTIONAL Herkunftsart;
+        NO IDENT
+        END Dachlandschaft;
+
+    END Hoehen.
+
+
+    TOPIC Nomenklatur =
+
+        TABLE NomNachfuehrung =
+            Identifikator: TEXT*12; !! Nummer des technischen Dossiers
+            Beschreibung: TEXT*30;
+            Perimeter: SURFACE WITH (STRAIGHTS, ARCS) VERTEX LKoord
+                WITHOUT OVERLAPS > 0.200;
+            Datum1: DATE; !! Datum des gueltigen Eintrags
+            Datum2: OPTIONAL DATE; !! Vergabe durch Nachfuehrungsgeometer
+        IDENT
+            Identifikator;
+        END NomNachfuehrung;
+
+        TABLE Flurname =
+            Entstehung: -> NomNachfuehrung; !! Beziehung 1-mc
+            Name: TEXT*30;
+            Geometrie: AREA WITH (STRAIGHTS, ARCS) VERTEX LKoord
+                WITHOUT OVERLAPS > 0.200;
+        NO IDENT
+        END Flurname;
+
+        TABLE FlurnamenPos =
+            Name: -> Flurname; !! Beziehung 1-m
+            NamPos: LKoord // Position innerhalb der Flaeche //;
+            NamOri: SchriftOri; !! Default: 100.0
+            NamHAli: HALIGNMENT; !! Default: Center
+            NamVAli: VALIGNMENT; !! Default: Half
+            NamSize: SchriftSize;
+        NO IDENT
+        END FlurnamenPos;
+
+        TABLE Ortsname =
+            Entstehung: -> NomNachfuehrung; !! Beziehung 1-mc
+            Name: TEXT*30;
+            Geometrie: SURFACE WITH (STRAIGHTS, ARCS) VERTEX LKoord
+                WITHOUT OVERLAPS > 0.200;
+        NO IDENT
+        END Ortsname;
+
+        TABLE OrtsnamenPos =
+            Name: -> Ortsname; !! Beziehung 1-m
+            NamPos: LKoord // Position innerhalb der Flaeche //;
+            NamOri: SchriftOri; !! Default: 100.0
+            NamHAli: HALIGNMENT; !! Default: Center
+            NamVAli: VALIGNMENT; !! Default: Half
+            NamSize: SchriftSize;
+        NO IDENT
+        END OrtsnamenPos;
+
+
+        TABLE Gelaendename =
+            Entstehung: -> NomNachfuehrung; !! Beziehung 1-mc
+            Name: TEXT*30;
+            NamPos: LKoord;
+            NamOri: SchriftOri; !! Default: 100.0
+            NamHAli: HALIGNMENT; !! Default: Center
+            NamVAli: VALIGNMENT; !! Default: Half
+            NamSize: SchriftSize;
+        NO IDENT
+        END Gelaendename;
+
+    END Nomenklatur.
+
+
+    TOPIC Liegenschaften =
+
+        DOMAIN
+            Versicherungsart = (Markstein, Kunststoffgrenzzeichen,
+                Bolzen, Rohr, Pfahl, Kreuz, unversichert);
+            Grundstuecksart = (Liegenschaft, SelbstRecht (Baurecht, Quellenrecht));
+
+        TABLE LiegenschaftNachf =
+            Identifikator: TEXT*12; !! Nummer des technischen Dossiers
+            Beschreibung: TEXT*30;
+            Perimeter: SURFACE WITH (STRAIGHTS, ARCS) VERTEX LKoord
+                WITHOUT OVERLAPS > 0.200;
+            !! Der Perimeter entspricht exakt dem Perimeter gebildet duch die von der
+            !! Mutation betroffenen Grundstücke
+            !! Bei Strassenmutationen sind Perimeter, welche nicht die gesamten
+            !! Parzellen umfassen, zugelassen. In jedem Fall ist das Arbeitsgebiet
+            !! einzubeziehen
+            Gueltigkeit: Status;
+            Datum1: DATE; !! Ausfertigungsdatum Mutation
+            Datum2: DATE;!! Datum Grundbuchvollzug / Datum Anerkennung
+            Datum3: OPTIONAL DATE; !! Vergabe durch Nachfuehrungsgeometer
+        IDENT
+            Identifikator;
+        END LiegenschaftNachf;
+
+        TABLE Grenzpunkt =
+            Entstehung: -> LiegenschaftNachf; !! Beziehung 1-mc
+            Identifikator: OPTIONAL TEXT*12;
+            NumPos: OPTIONAL LKoord;      !! nur notwendig, wenn Punktnummernplan
+            NumOri: OPTIONAL SchriftOri;  !! noch gefuehrt wird
+            NumHali: OPTIONAL HALIGNMENT; !! Default: Left
+            NumVali: OPTIONAL VALIGNMENT; !! Default: Base
+            Geometrie: LKoord;
+            LageGen: Genauigkeit;
+            LageZuv: Zuverlaessigkeit;
+            Punktzeichen: Versicherungsart;
+            SymbolOri: OPTIONAL SchriftOri; !! Default: 0.0
+            Herkunft: OPTIONAL Herkunftsart;
+        IDENT
+            Geometrie;
+        END Grenzpunkt;
+
+        TABLE PROJGrundstueck =
+            Entstehung: -> LiegenschaftNachf // Gueltigkeit = projektiert //; !! Beziehung 1-mc
+            Nummer: TEXT*12;
+            Geometrie: SURFACE WITH (STRAIGHTS, ARCS) VERTEX LKoord BASE
+                // LKoord nur LFP, GP und Hoheitsgrenzpunkte //
+                WITHOUT OVERLAPS > 0.050;
+            Art: Grundstuecksart;
+            Qualitaet: Qualitaetsart;
+            Herkunft: OPTIONAL Herkunftsart;
+        IDENT
+             Nummer, Art;
+        END PROJGrundstueck;
+
+        TABLE PROJGrundstueckPos =
+            Objekt: -> PROJGrundstueck; !! Beziehung 1-m
+            NumPos: LKoord // Position in der Regel innerhalb der Flaeche //;
+            NumOri: SchriftOri; !! Default: 100.0
+            NumHAli: HALIGNMENT; !! Default: Left
+            NumVAli: VALIGNMENT; !! Default: Base
+        NO IDENT
+        END PROJGrundstueckPos;
+
+
+        TABLE Grundstueck =
+            Entstehung: -> LiegenschaftNachf // Gueltigkeit = gueltig //; !! Beziehung 1-mc
+            Nummer: TEXT*12;
+            Eigentuemernummer: TEXT*12;
+            Gueltigkeit: (rechtskraeftig, streitig);
+            Art: Grundstuecksart;
+            Qualitaet: Qualitaetsart;
+            Herkunft: OPTIONAL Herkunftsart;
+        IDENT
+             Nummer;
+        END Grundstueck;
+
+        TABLE GrundstueckPos =
+            Objekt: -> Grundstueck; !! Beziehung 1-m
+            NumPos: LKoord // Position in der Regel innerhalb der Flaeche //;
+            NumOri: SchriftOri; !! Default: 100.0
+            NumHAli: HALIGNMENT; !! Default: Left
+            NumVAli: VALIGNMENT; !! Default: Base
+        NO IDENT
+        END GrundstueckPos;
+
+        TABLE Liegenschaft =
+            Objekt: -> Grundstueck // Art = Liegenschaft //; !! Beziehung 1-c
+            Geometrie: AREA WITH (STRAIGHTS, ARCS) VERTEX LKoord BASE
+                // LKoord nur LFP, GP und Hoheitsgrenzpunkte //
+                WITHOUT OVERLAPS > 0.050;
+            Flaechenmass: DIM2 1 999999999;
+        NO IDENT
+        END Liegenschaft;
+
+        TABLE SelbstRecht =
+            Objekt: -> Grundstueck // Art = SelbstRecht //; !! Beziehung 1-c
+            Geometrie: SURFACE WITH (STRAIGHTS, ARCS) VERTEX LKoord BASE
+                // LKoord nur LFP, GP und Hoheitsgrenzpunkte //
+                WITHOUT OVERLAPS > 0.050;
+            Flaechenmass: DIM2 1 999999999;
+        NO IDENT
+        END SelbstRecht;
+
+    END Liegenschaften.  
+
+
+    TOPIC Rohrleitungen = !! gemaess eidg. Rohrleitungsgesetz
+
+        DOMAIN
+            Medium = (Oel, Gaz, weitere);
+
+        TABLE LeitungsNachfuehrung =
+            Identifikator: TEXT*12;
+            Beschreibung: TEXT*30;
+            Perimeter: SURFACE WITH (STRAIGHTS, ARCS) VERTEX LKoord
+                WITHOUT OVERLAPS > 0.200;
+            Gueltigkeit: Status;
+            Datum1: DATE; !! Datum des gueltigen Eintrags
+            Datum2: OPTIONAL DATE; !! Vergabe durch Nachfuehrungsgeometer
+        IDENT
+            Identifikator;
+        END LeitungsNachfuehrung;
+
+        TABLE PROJElement =
+            Entstehung: -> LeitungsNachfuehrung
+                // Gueltigkeit = projektiert //; !! Beziehung 1-mc
+            Betreiber: TEXT*30;
+            !! Eine der folgenden Geometrien muss existieren:
+            Geometrie1: OPTIONAL SURFACE WITH (STRAIGHTS, ARCS) VERTEX HKoord
+                WITHOUT OVERLAPS > 0.050;
+            Geometrie2: OPTIONAL POLYLINE WITH (STRAIGHTS, ARCS) VERTEX HKoord;
+            Geometrie3: OPTIONAL HKoord;
+            Qualitaet: Qualitaetsart;
+            Art: Medium;
+            Herkunft: OPTIONAL Herkunftsart;
+        NO IDENT
+        END PROJElement;
+
+        TABLE Leitungsobjekt =
+            Entstehung: -> LeitungsNachfuehrung
+                // Gueltigkeit = gueltig //; !! Beziehung 1-mc
+            Betreiber: TEXT*30;
+            Qualitaet: Qualitaetsart;
+            Art: Medium;
+            Herkunft: OPTIONAL Herkunftsart;
+        NO IDENT
+        END Leitungsobjekt;
+
+        TABLE Flaechenelement =
+            Objekt: -> Leitungsobjekt; !! Beziehung 1-mc
+            Geometrie: SURFACE WITH (STRAIGHTS, ARCS) VERTEX HKoord
+                WITHOUT OVERLAPS > 0.050;
+        NO IDENT
+        END Flaechenelement;
+
+        TABLE Linienelement =
+            Objekt: -> Leitungsobjekt; !! Beziehung 1-mc
+            Geometrie: POLYLINE WITH (STRAIGHTS, ARCS) VERTEX HKoord;
+        NO IDENT
+        END Linienelement;
+
+
+        TABLE Punktelement =
+            Objekt: -> Leitungsobjekt; !! Beziehung 1-mc
+            Geometrie: HKoord;
+        NO IDENT
+        END Punktelement;
+
+        TABLE Signalpunkt =
+            Entstehung: -> LeitungsNachfuehrung; !! Beziehung 1-mc
+            Nummer: TEXT*12;
+            NumPos: LKoord;
+            NumOri: SchriftOri; !! Default: 100.0
+            NumHAli: HALIGNMENT; !! Default: Left
+            NumVAli: VALIGNMENT; !! Default: Base
+            Betreiber: TEXT*30;
+            Geometrie: LKoord;
+            Qualitaet: Qualitaetsart;
+            Art: Medium;
+            Punktart: (Signal, Tafel_Stein, weitere);
+            Herkunft: OPTIONAL Herkunftsart;
+        NO IDENT
+        END Signalpunkt;
+
+    END Rohrleitungen.
+
+
+    TOPIC Gemeinde =
+
+        DOMAIN
+            Versicherungsart = (Markstein, Kunststoffgrenzzeichen,
+                Bolzen, Rohr, Pfahl, Kreuz, unversichert);
+
+        TABLE GemeindeNachfuehrung =
+            Identifikator: TEXT*12;
+            Beschreibung: TEXT*30;
+            Perimeter: SURFACE WITH (STRAIGHTS, ARCS) VERTEX LKoord
+                WITHOUT OVERLAPS > 0.200;
+            Gueltigkeit: Status;
+            Datum1: DATE; !! Abgabe an Grundbuchamt
+            Datum2: OPTIONAL DATE; !! Eintrag im Grundbuch
+            Datum3: OPTIONAL DATE; !! z.B. Datum Beschluss
+        IDENT
+            Identifikator;
+        END GemeindeNachfuehrung;
+
+        TABLE PROJGrenze =
+            Entstehung: -> GemeindeNachfuehrung
+            // Gueltigkeit = projektiert //; !! Beziehung 1-mc
+            NeueLinie: POLYLINE WITH (STRAIGHTS, ARCS) VERTEX LKoord BASE
+                // LKoord nur LFP, Grenzpunkte und Hoheitsgrenzpunkte //
+                WITHOUT OVERLAPS > 0.050;
+            Herkunft: OPTIONAL Herkunftsart;
+        NO IDENT
+        END PROJGrenze;
+
+        TABLE Gemeinde =
+            Entstehung: -> GemeindeNachfuehrung
+                // Gueltigkeit = gueltig //; !! Beziehung 1-c
+            Name: TEXT*30;
+            BFSNr: [1..9999];
+            Geometrie: SURFACE WITH (STRAIGHTS, ARCS) VERTEX LKoord BASE
+                // LKoord nur LFP, Grenzpunkte und Hoheitsgrenzpunkte //
+                WITHOUT OVERLAPS > 0.050;
+            Gueltigkeit: (rechtskraeftig, streitig);
+            Herkunft: OPTIONAL Herkunftsart;
+        IDENT
+            Name, BFSNr;
+        END Gemeinde;
+
+
+        TABLE Hoheitsgrenzpunkt =
+            Entstehung: -> GemeindeNachfuehrung; !! Beziehung 1-mc
+            Identifikator: OPTIONAL TEXT*12;
+            NumPos: OPTIONAL LKoord;                  !! Nur notwendig, wenn Punktnummernplan
+            NumOri: OPTIONAL SchriftOri;                !! noch gefuehrt wird
+            NumHali: OPTIONAL HALIGNMENT; !! Default: Left
+            NumVali: OPTIONAL VALIGNMENT; !! Default: Base
+            Geometrie: LKoord;
+            LageGen: Genauigkeit;
+            LageZuv: Zuverlaessigkeit;
+            Punktzeichen: Versicherungsart;
+            SymbolOri: OPTIONAL SchriftOri; !! Default: 0.0
+            Herkunft: OPTIONAL Herkunftsart;
+        IDENT
+            Geometrie;
+        END Hoheitsgrenzpunkt;
+
+    END Gemeinde.
+
+
+    TOPIC Hoheitsgrenzen =
+
+        TABLE Hoheitsgrenzen =
+            Geometrie: POLYLINE WITH (STRAIGHTS, ARCS) VERTEX LKoord;
+            Art: (Bezirk, Kanton, Land);
+            Herkunft: OPTIONAL Herkunftsart;
+        NO IDENT
+        END Hoheitsgrenzen;
+
+    END Hoheitsgrenzen.
+
+
+    TOPIC Planeinteilung =
+
+        TABLE Plan =
+            Nummer: TEXT*12;
+            Geometrie: AREA WITH (STRAIGHTS, ARCS) VERTEX LKoord
+                WITHOUT OVERLAPS > 0.050;
+            TechDossier: TEXT*12; !! Genehmigungsvermerk
+            Datum: OPTIONAL DATE; !! falls nicht im TOPIC NF_Stand
+        IDENT
+            Nummer;
+        END Plan;
+
+    END Planeinteilung.
+
+
+    TOPIC TSEinteilung =
+
+        TABLE Toleranzstufen =
+            Identifikator: TEXT*12;
+            Geometrie: AREA WITH (STRAIGHTS, ARCS) VERTEX LKoord
+                WITHOUT OVERLAPS > 0.200;
+            Datum: OPTIONAL DATE; !! falls nicht im TOPIC NF_Stand
+            Art: (TS1, TS2, TS3, TS4, TS5);
+        IDENT
+            Identifikator;
+        END Toleranzstufen;
+
+    END TSEinteilung.
+
+
+    TOPIC Rutschgebiet =
+
+        TABLE Rutschung =
+            Identifikator: TEXT*12;
+            Geometrie: SURFACE WITH (STRAIGHTS, ARCS) VERTEX LKoord
+                WITHOUT OVERLAPS > 0.200;
+            Datum: DATE;  !! Datum des Grundbucheintrags
+        IDENT
+            Identifikator;
+        END Rutschung;
+
+    END Rutschgebiet.
+
+
+    TOPIC Realisierungsstand =
+
+        TABLE Realisierung =
+            Identifikator: TEXT*12;
+            !! Losnummer XX.YY, XX = Ebenennummer (01 - 08), YY = Laufnummer
+            Objekt: (Fixpunkte, Bodenbedeckung, Einzelobjekte, Hoehen,
+                Nomenklatur, Liegenschaften, Rohrleitungen,
+                Planeinteilung, TSEinteilung, Rutschgebiet,
+                NF_Stand);
+            Geometrie: SURFACE WITH (STRAIGHTS, ARCS) VERTEX LKoord
+                WITHOUT OVERLAPS > 0.200;
+            Datum: DATE; !! Datum des letzten Standes
+            Beschrieb: TEXT*60; !! Realisierungsstand (geplant, in_Arbeit, anerkannt)
+        IDENT
+            Identifikator;
+        END Realisierung;
+
+    END Realisierungsstand.
+
+
+    TOPIC NF_Stand =
+
+    TABLE NF =
+            Identifikator: TEXT*12; !! Nummer des technischen Dossiers
+            !! Periodische Revisionen, Begehungen, Nachführungen)
+            Objekt: (Fixpunkte, Bodenbedeckung, Einzelobjekte, Hoehen,
+                Nomenklatur, Liegenschaften, Rohrleitungen, Gemeinde,
+                Planeinteilung, TSEinteilung, Rutschgebiet, Realisierungsstand);
+            Geometrie: SURFACE WITH (STRAIGHTS, ARCS) VERTEX LKoord
+                WITHOUT OVERLAPS > 0.200;
+            Datum1: DATE // Datum der letzte Nachfuehrung //;
+            Datum2: DATE // Datum der letzte Bearbeitung der Tabelle NF//;
+        IDENT
+            Identifikator;
+        END NF;
+
+    END NF_Stand.
+!! Die Topic NF_Stand bleibt OPTIONAL bei einer laufenden Nachfuehrung des Datensatzes
+!! Die Topic NF_Stand wird zwingend bei einer periodischen Nachfuehrung des Datensatzes
+
+
+  TOPIC Gebaeudeadressen = 
+    !! Anstelle der Strassenbeschriftung in der Bodenbedeckung
+
+    TABLE Strassenverzeichnis =
+      Strassennummer: TEXT*12;
+      Strassenname: TEXT*60;
+    IDENT
+      Strassennummer;
+    END Strassenverzeichnis;
+
+    TABLE Gebaeudeadresse =
+      Strasse: -> Strassenverzeichnis; !! Beziehung 1-mc
+      Polizeinummer: TEXT*12;
+      !! Laufnummer anstelle der Polizeinummer (wird nicht erhoben)
+      RefPunkt: LKoord; !! Position in der Regel innerhalb der Gebaeude
+      NumPos: OPTIONAL LKoord;
+      NumOri: OPTIONAL SchriftOri;
+      NumHAli: OPTIONAL HALIGNMENT; !! Default: Center
+      NumVAli: OPTIONAL VALIGNMENT; !! Default: Half
+      NamSize: OPTIONAL SchriftSize;         !! Default: Mittel; 
+      Assekuranznummer: OPTIONAL TEXT*12; 
+    IDENT
+      Polizeinummer, Strasse;
+    END Gebaeudeadresse;
+
+    TABLE NamenPos =
+      Objekt: -> Strassenverzeichnis; !! Beziehung 1-mc
+      AnfIndex: OPTIONAL [1..60];
+      EndIndex: OPTIONAL [1..60];
+      NamPos: LKoord; !! Position in der Regel innerhalb der Strasse
+      NamOri: SchriftOri;
+      NamHAli: OPTIONAL HALIGNMENT; !! Default: Center
+      NamVAli: OPTIONAL VALIGNMENT; !! Default: Half
+    NO IDENT
+    END NamenPos;
+
+    TABLE Strassenteil =
+      Strasse: -> Strassenverzeichnis; !! Beziehung 1-m
+      Geometrie: POLYLINE WITH (STRAIGHTS, ARCS) VERTEX LKoord;
+    NO IDENT
+    END Strassenteil;
+
+  END Gebaeudeadressen.
+
+
+  TOPIC Planrahmen =
+
+    DOMAIN
+      TextArt = (Plannummer, Gemeindename, Geometername, Datum,
+                 Massstab, Koordinatenanschrift, Nachbargemeinde,
+                 Nachbarplan);
+      SymbolArt = (Koordinatenkreuz, Nordpfeil);
+
+    TABLE Planrahmen =
+      Plannummer: TEXT*12;
+      !! Geometrie: POLYLINE WITH (STRAIGHTS) VERTEX LKoord;
+      Gemeinde: TEXT*30;
+      Datum: DATE;
+      Massstab: TEXT*12;
+      !! Nordpfeilart: TEXT*30;
+      !! NordpfeilPos: LKoord // Position innerhalb der Geometrie //;
+      !! NordpfeilHAli: OPTIONAL HALIGNMENT; !! Default: Center
+      !! NordpfeilVAli: OPTIONAL VALIGNMENT; !! Default: Half
+    IDENT
+      Plannummer;
+    END Planrahmen;
+
+    TABLE Linienelement =
+      Objekt: -> Planrahmen; !! Beziehung 1-mc
+      Geometrie: POLYLINE WITH (STRAIGHTS) VERTEX LKoord;
+    NO IDENT
+    END Linienelement;
+
+    TABLE PlanbeschriftungsPos =
+      Objekt: -> Planrahmen; !! Beziehung 1-mc
+      Text: TEXT*30;
+      TextArt: TextArt;
+      TextPos: LKoord // Position innerhalb Objekt ^. Geometrie //;
+      TextOri: OPTIONAL SchriftOri; !! Default: 100.0
+      TextHAli: OPTIONAL HALIGNMENT; !! Default: Center
+      TextVAli: OPTIONAL VALIGNMENT; !! Default: Half
+     TextSize: SchriftSize;         !! Default: mittel
+    NO IDENT
+    END PlanbeschriftungsPos;
+
+    TABLE Koordinatenkreuze = !! ersetzt durch Tabelle Symbole
+      Objekt: -> Planrahmen; !! Beziehung 1-mc
+      KoordPos: LKoord // Position innerhalb Objekt ^. Geometrie //;
+    NO IDENT
+    END Koordinatenkreuze;
+
+    TABLE Symbole =
+      Symbol: -> Planrahmen; !! Beziehung 1-mc
+      SymbolPos: LKoord // Position innerhalb Objekt ^. Geometrie //;
+      SymbolOri: OPTIONAL SchriftOri; !! Default: 0.0
+      Art: SymbolArt;
+    NO IDENT
+    END Symbole;
+
+  END Planrahmen.
+
+
+END Grunddatensatz_SZ.  !! 
+
+
+FORMAT FIX WITH LINESIZE = 75, TIDSIZE = 10;
+
+
+CODE
+  BLANK = DEFAULT, UNDEFINED = DEFAULT, CONTINUE = DEFAULT;
+  TID = I32;
+END.
