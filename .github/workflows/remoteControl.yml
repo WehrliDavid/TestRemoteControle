@@ -12,5 +12,5 @@ jobs:
           curl -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.TEST_REMOTE_CONTROLE }}" \
-            https://api.github.com/WehrliDavid/repos/TestModelsRepo/dispatches \
+            https://api.github.com/repos/WehrliDavid/TestModelsRepo/dispatches \
             -d '{"event_type":"update","client_payload":{"ref":"main"}}'
