@@ -35,9 +35,9 @@ jobs:
             FILE=$(echo "$line" | cut -f2)
 
             case "$STATUS" in
-              A)  add=$(echo "$FILE, $STATUS") ;;
-              M) modlfy=$(echo "$FILE, $STATUS") ;;
-              D) delete=$(echo "$FILE, $STATUS") ;;
+              A)  add="$FILE" ;;
+              M)  modify="$FILE" ;;   
+              D)  delete="$FILE" ;;
               R*) echo "  🔀 RENAMED:  $FILE -> $(echo "$line" | cut -f3)" ;;
               *) echo "  ❓ UNKNOWN ($STATUS): $FILE" ;;
             esac
