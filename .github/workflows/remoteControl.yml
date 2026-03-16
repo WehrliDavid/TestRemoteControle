@@ -42,7 +42,7 @@ jobs:
               R*) echo "  🔀 RENAMED:  $FILE -> $(echo "$line" | cut -f3)" ;;
               *) echo "  ❓ UNKNOWN ($STATUS): $FILE" ;;
             esac
-          done < /tmp/chabged_files.txt
+          done < /tmp/changed_files.txt
 
           echo " add: $add"
           echo " modify: $modify"
