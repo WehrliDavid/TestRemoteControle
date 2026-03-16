@@ -31,9 +31,9 @@ jobs:
             FILE=$(echo "$line" | cut -f2)
 
             case "$STATUS" in
-              A)  add=$(echo "  ✅ ADDED:    $FILE, $STATUS") ;;
-              M) modlfy=$(echo "  ✏️  MODIFIED: $FILE, $STATUS") ;;
-              D) delete=$(echo "  ❌ DELETED:  $FILE, $STATUS") ;;
+              A)  add=$(echo "$FILE, $STATUS") ;;
+              M) modlfy=$(echo "$FILE, $STATUS") ;;
+              D) delete=$(echo "$FILE, $STATUS") ;;
               R*) echo "  🔀 RENAMED:  $FILE -> $(echo "$line" | cut -f3)" ;;
               *) echo "  ❓ UNKNOWN ($STATUS): $FILE" ;;
             esac
@@ -48,6 +48,6 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.TEST_REMOTE_CONTROLE }}" \
             https://api.github.com/repos/WehrliDavid/TestModelsRepo/dispatches \
-            -d '{"event_type":"update","client_payload":{"ref":"main", "model_to_update": {"add": $add, "modify": $modify, "delete": $delete}}'
+            -d '{"event_type":"update","client_payload":{"ref":"main", "add": $add, "modify": $modify, "delete": $delete}'
 
   
