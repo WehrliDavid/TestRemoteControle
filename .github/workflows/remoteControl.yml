@@ -43,6 +43,10 @@ jobs:
             esac
           done
 
+          echo " add: $add"
+          echo " modify: $modify"
+          echo " delete: $delete"
+
           echo "======================================"
           echo "Commits included in this push:"
           echo "======================================"
