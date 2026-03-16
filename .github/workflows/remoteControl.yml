@@ -2,6 +2,7 @@ name: Detect Model Changes
 
 on:
   push:
+    branches: [main, master]
     paths:
       - 'models/**'
 
@@ -30,9 +31,9 @@ jobs:
             FILE=$(echo "$line" | cut -f2)
 
             case "$STATUS" in
-              A) echo "  ✅ ADDED:    $FILE" ;;
-              M) echo "  ✏️  MODIFIED: $FILE" ;;
-              D) echo "  ❌ DELETED:  $FILE" ;;
+              A) echo "  ✅ ADDED:    $FILE, $STATUS" ;;
+              M) echo "  ✏️  MODIFIED: $FILE, $STATUS" ;;
+              D) echo "  ❌ DELETED:  $FILE, $STATUS" ;;
               R*) echo "  🔀 RENAMED:  $FILE -> $(echo "$line" | cut -f3)" ;;
               *) echo "  ❓ UNKNOWN ($STATUS): $FILE" ;;
             esac
