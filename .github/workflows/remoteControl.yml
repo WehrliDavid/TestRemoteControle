@@ -17,6 +17,7 @@ jobs:
           fetch-depth: 0  # ⚠️ Important: fetches full history, not just latest commit
 
       - name: Print all changed files in models/
+        id: changes
         run: |
           echo "======================================"
           echo "Changed files in models/ folder:"
@@ -25,9 +26,9 @@ jobs:
           # Get all commits in this push
           COMMITS="${{ github.event.before }}".."${{ github.sha }}"
 
-          add=""
-          modify=""
-          delete=""
+          add=()
+          modify=()
+          delete=()
           
           # Loop through each changed file in models/
           git diff --name-status $COMMITS -- models/ > /tmp/changed_files.txt
@@ -36,17 +37,22 @@ jobs:
             FILE=$(echo "$line" | cut -f2)
 
             case "$STATUS" in
-              A)  add="$FILE" ;;
-              M)  modify="$FILE" ;;   
+              A)  add+=("$FILE") ;;
+              M)  modify+=("$FILE") ;;   
               D)  delete="$FILE" ;;
               R*) echo "  🔀 RENAMED:  $FILE -> $(echo "$line" | cut -f3)" ;;
               *) echo "  ❓ UNKNOWN ($STATUS): $FILE" ;;
             esac
           done < /tmp/changed_files.txt
 
-          echo " add: $add"
-          echo " modify: $modify"
-          echo " delete: $delete"
+          # Join arrays into comma-separated strings
+          add_str=$(IFS=,; echo "${add[*]}")
+          modify_str=$(IFS=,; echo "${modify[*]}")
+          delete_str=$(IFS=,; echo "${delete[*]}")
+          
+          echo " add: $add_str"
+          echo " modify: $modify_str"
+          echo " delete: $delete_str"
 
           echo "======================================"
           echo "Commits included in this push:"
