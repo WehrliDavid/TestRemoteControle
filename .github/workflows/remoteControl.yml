@@ -52,6 +52,6 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.TEST_REMOTE_CONTROLE }}" \
             https://api.github.com/repos/WehrliDavid/TestModelsRepo/dispatches \
-            -d '{"event_type":"update","client_payload":{"ref":"main", "add": $add, "modify": $modify, "delete": $delete}}'
+            -d "{\"event_type\":\"update\",\"client_payload\":{\"ref\":\"main\",\"add\":\"$add\",\"modify\":\"$modify\",\"delete\":\"$delete\"}}"
 
   
