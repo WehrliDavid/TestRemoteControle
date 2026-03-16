@@ -21,10 +21,14 @@ jobs:
           echo "======================================"
           echo "Changed files in models/ folder:"
           echo "======================================"
-
+          
           # Get all commits in this push
           COMMITS="${{ github.event.before }}".."${{ github.sha }}"
 
+          add=""
+          modify=""
+          delete=""
+          
           # Loop through each changed file in models/
           git diff --name-status $COMMITS -- models/ | while read line; do
             STATUS=$(echo "$line" | cut -f1)
