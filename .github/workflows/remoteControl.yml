@@ -33,7 +33,7 @@ jobs:
           
           # Loop through each changed file in models/
           git diff --name-status $COMMITS -- models/ > /tmp/changed_files.txt
-          echo "COMMITS: $COMMITS"
+          git diff --name-status $COMMITS -- models/
           while read line; do
             STATUS=$(echo "$line" | cut -f1)
             FILE=$(echo "$line" | cut -f2)
