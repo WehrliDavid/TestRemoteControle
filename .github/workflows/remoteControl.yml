@@ -50,13 +50,13 @@ jobs:
           modify_str=$(IFS=,; echo "${modify[*]}")
           delete_str=$(IFS=,; echo "${delete[*]}")
           
-          echo " add: $add_str" >> "$GITHUB_OUTPUT"
-          echo " modify: $modify_str" >> "$GITHUB_OUTPUT"
-          echo " delete: $delete_str" >> "$GITHUB_OUTPUT"
+          echo "add: $add_str" >> "$GITHUB_OUTPUT"
+          echo "modify: $modify_str" >> "$GITHUB_OUTPUT"
+          echo "delete: $delete_str" >> "$GITHUB_OUTPUT"
 
-          echo " add: $add_str"
-          echo " modify: $modify_str"
-          echo " delete: $delete_str"
+          echo "add: $add_str"
+          echo "modify: $modify_str"
+          echo "delete: $delete_str"
 
           echo "======================================"
           echo "Commits included in this push:"
@@ -71,7 +71,8 @@ jobs:
             --arg ref  "main" \
             --arg add  "${{ steps.changes.outputs.add }}" \
             --arg mod  "${{ steps.changes.outputs.modify }}" \
-            --arg del  "${{ steps.changes.outputs.delete }}"
+            --arg del  "${{ steps.changes.outputs.delete }}" \
+            '{event_type: "update", client_payload: {repo: $repo, sha: $sha, ref: $ref, add: $add, modify: $mod, delete: $del}}')
           
           curl -X POST \
             -H "Accept: application/vnd.github+json" \
