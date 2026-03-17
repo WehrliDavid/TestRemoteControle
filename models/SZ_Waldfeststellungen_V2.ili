@@ -22,7 +22,7 @@ INTERLIS 2.3;
 !! 2017-01-11 |  -  | Kep | Geometrie ausschliesslich mit STRAIGHTS
 !! 2016-10-26 |  -  | Kep | Erstfassung
 !!==============================================================================
-MODEL SZ_Waldfeststellungen_V3 (de)
+MODEL SZ_Waldfeststellungen_V2 (de)
   AT "https://models.geo.sz.ch"
   VERSION "2023-09-08" =
 
