@@ -46,10 +46,14 @@ jobs:
           done < /tmp/changed_files.txt
 
           # Join arrays into comma-separated strings
-          add_str=$(IFS=,; echo "${add[*]}")
+          add_str=$(IFS=,; echo "${add[*]}") 
           modify_str=$(IFS=,; echo "${modify[*]}")
           delete_str=$(IFS=,; echo "${delete[*]}")
           
+          echo " add: $add_str" >> "$GITHUB_OUTPUT"
+          echo " modify: $modify_str" >> "$GITHUB_OUTPUT"
+          echo " delete: $delete_str" >> "$GITHUB_OUTPUT"
+
           echo " add: $add_str"
           echo " modify: $modify_str"
           echo " delete: $delete_str"
@@ -61,10 +65,18 @@ jobs:
 
       - name: Trigger the IliModelRepo action
         run: |
+          payload=$(jq -n \
+            --arg repo "${{ github.repository }}" \
+            --arg sha  "${{ github.sha }}" \
+            --arg ref  "main" \
+            --arg add  "${{ steps.changes.outputs.add }}" \
+            --arg mod  "${{ steps.changes.outputs.modify }}" \
+            --arg del  "${{ steps.changes.outputs.delete }}"
+          
           curl -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.TEST_REMOTE_CONTROLE }}" \
             https://api.github.com/repos/WehrliDavid/TestModelRemoteUpdate/dispatches \
-            -d "{\"event_type\":\"update\",\"client_payload\":{\"repo\":\"${{ github.repository }}\",\"sha\":\"${{ github.sha }}\", \"ref\":\"main\",\"add\":\"$add\",\"modify\":\"$modify\",\"delete\":\"$delete\"}}"
+            -d "$payload"
 
   
