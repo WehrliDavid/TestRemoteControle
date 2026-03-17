@@ -42,7 +42,7 @@ jobs:
               A)  add+=("$FILE") ;;
               M)  modify+=("$FILE") ;;   
               D)  delete="$FILE" ;;
-              R*) rename="$FILE -> $(echo "$line" | cut -f3)" ;;
+              R) rename="$FILE -> $(echo "$line" | cut -f3)" ;;
               *)  echo "  ❓ UNKNOWN ($STATUS): $FILE" ;
                   exit 1;
             esac
