@@ -50,9 +50,9 @@ jobs:
           modify_str=$(IFS=,; echo "${modify[*]}")
           delete_str=$(IFS=,; echo "${delete[*]}")
           
-          echo "add: $add_str" >> "$GITHUB_OUTPUT"
-          echo "modify: $modify_str" >> "$GITHUB_OUTPUT"
-          echo "delete: $delete_str" >> "$GITHUB_OUTPUT"
+          echo "add=$add_str" >> "$GITHUB_OUTPUT"
+          echo "modify=$modify_str" >> "$GITHUB_OUTPUT"
+          echo "delete=$delete_str" >> "$GITHUB_OUTPUT"
 
           echo "add: $add_str"
           echo "modify: $modify_str"
