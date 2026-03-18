@@ -24,7 +24,7 @@ INTERLIS 2.3;
 !!==============================================================================
 MODEL SZ_Waldfeststellungen_V2 (de)
   AT "https://models.geo.sz.ch"
-  VERSION "2023-03-18" =
+  VERSION "2024-03-18" =
 
   IMPORTS UNQUALIFIED INTERLIS;
 
